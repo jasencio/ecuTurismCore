@@ -20,12 +20,17 @@ public class User {
   @Id
   private String id;
   @NotBlank
-  @Size(max = 20)
   private String username;
+  @NotBlank
+  @Size(max = 120)
+  private String name;
   @NotBlank
   @Size(max = 50)
   @Email
   private String email;
+  @NotBlank
+  @Size(max = 120)
+  private String phone;
   @NotBlank
   @Size(max = 120)
   private String password;
