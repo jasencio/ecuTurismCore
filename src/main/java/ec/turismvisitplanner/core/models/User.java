@@ -1,12 +1,19 @@
 package ec.turismvisitplanner.core.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +40,8 @@ public class User {
   private String phone;
   @NotBlank
   @Size(max = 120)
+  @Transient
+  @JsonIgnore
   private String password;
   @DBRef
   private Set<Role> roles = new HashSet<>();
