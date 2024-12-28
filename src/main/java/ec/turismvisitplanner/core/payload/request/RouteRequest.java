@@ -23,4 +23,6 @@ public class RouteRequest {
     private String minutes;
 
     private Hardness hardness;
+
+    private String distance;
 }

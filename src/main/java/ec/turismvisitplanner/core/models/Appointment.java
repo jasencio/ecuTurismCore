@@ -31,6 +31,8 @@ public class Appointment {
 
     private Date eventDate;
 
+    private Date eventCreated;
+
     private int groupSize;
 
     private AppointmentStatus status;

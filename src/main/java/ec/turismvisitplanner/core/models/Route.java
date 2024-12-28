@@ -29,4 +29,6 @@ public class Route {
     private String minutes;
 
     private Hardness hardness;
+
+    private String distance;
 }

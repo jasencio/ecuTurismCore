@@ -11,6 +11,7 @@ import ec.turismvisitplanner.core.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,9 +38,25 @@ public class AppointmentService {
                         tourist(findUser(appointmentRequest.getIdTourist())).
                         route(findRoute(appointmentRequest.getIdRoute())).
                         eventDate(appointmentRequest.getEventDate()).
+                        eventCreated(new Date()).
                         groupSize(appointmentRequest.getGroupSize()).status(AppointmentStatus.SCHEDULED).build();
 
         return appointmentRepository.save(appointment);
+    }
+
+    public Appointment assignGuideAppointment(String idAppointment, String idTouristGuide) {
+
+
+        Optional<Appointment> appointment = appointmentRepository.findById(idAppointment);
+
+        if (appointment.isPresent()) {
+            Appointment _appointment = appointment.get();
+            if (_appointment.getTouristGuide() == null) {
+                _appointment.setTouristGuide(findUser(idTouristGuide));
+            }
+            return appointmentRepository.save(_appointment);
+        }
+        return null;
     }
 
     private User findUser(String idUser) {
