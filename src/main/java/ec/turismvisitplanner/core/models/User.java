@@ -12,9 +12,12 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Collection;
+import java.util.List;
 
 @Data
 @Builder
@@ -22,11 +25,9 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Document(collection = "users")
-public class User {
+public class User implements UserDetails {
   @Id
   private String id;
-  @NotBlank
-  private String username;
   @NotBlank
   @Size(max = 120)
   private String name;
@@ -45,4 +46,34 @@ public class User {
   private Set<Role> roles = new HashSet<>();
   @DBRef
   private Organization organization;
+
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return List.of();
+  }
+
+  @Override
+  public String getUsername() {
+    return email;
+  }
+
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
+
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
 }

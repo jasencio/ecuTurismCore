@@ -38,7 +38,6 @@ public class UserService {
     public User createUser(UserRequest userRequest) {
         User user = User.
                 builder().
-                username(userRequest.getUsername()).
                 name(userRequest.getName()).
                 email(userRequest.getEmail()).
                 phone(userRequest.getPhone()).
@@ -55,7 +54,6 @@ public class UserService {
             Organization organization = findOrganization(userRequest.getIdOrganization());
             Set<Role> roles = findRoles(userRequest.getIdRoles());
             User _user = user.get();
-            _user.setUsername(userRequest.getUsername()!=null?userRequest.getUsername():_user.getUsername());
             _user.setName(userRequest.getName()!=null?userRequest.getName():_user.getName());
             _user.setEmail(userRequest.getEmail()!=null?userRequest.getEmail():_user.getEmail());
             _user.setPhone(userRequest.getPhone()!=null?userRequest.getPhone():_user.getPhone());
