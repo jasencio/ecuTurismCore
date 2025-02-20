@@ -8,6 +8,7 @@ import ec.turismvisitplanner.core.repository.OrganizationRepository;
 import ec.turismvisitplanner.core.repository.RoleRepository;
 import ec.turismvisitplanner.core.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,15 @@ public class UserService {
 
     public List<User> getAll() {
         return userRepository.findAll();
+    }
+
+    public ResponseEntity<?> getOne(String id) {
+        Optional<User> user = userRepository.findById(id);
+        if(user.isPresent()){
+            return ResponseEntity.ok(user.get());
+        }else{
+            return ResponseEntity.notFound().build();
+        }
     }
 
     public User createUser(UserRequest userRequest) {

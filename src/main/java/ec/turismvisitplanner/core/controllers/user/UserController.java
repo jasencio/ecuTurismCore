@@ -29,6 +29,11 @@ public class UserController {
         return userService.getAll();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUser(@PathVariable String id) {
+        return userService.getOne(id);
+    }
+
     @PostMapping()
     public ResponseEntity<?> createUser(@RequestBody UserRequest userRequest) {
         try {
