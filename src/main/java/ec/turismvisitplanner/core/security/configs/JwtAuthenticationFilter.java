@@ -1,6 +1,7 @@
 package ec.turismvisitplanner.core.security.configs;
 
 import ec.turismvisitplanner.core.security.services.JwtService;
+import ec.turismvisitplanner.core.services.BlacklistTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,15 +25,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final BlacklistTokenService blacklistTokenService;
 
     public JwtAuthenticationFilter(
             JwtService jwtService,
             UserDetailsService userDetailsService,
-            HandlerExceptionResolver handlerExceptionResolver
+            HandlerExceptionResolver handlerExceptionResolver,
+            BlacklistTokenService blacklistTokenService
     ) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
         this.handlerExceptionResolver = handlerExceptionResolver;
+        this.blacklistTokenService = blacklistTokenService;
     }
 
     @Override
@@ -49,15 +53,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         try {
-            final String jwt = authHeader.substring(7);
-            final String userEmail = jwtService.extractUserEmail(jwt);
+            final String jwtToken = authHeader.substring(7);
+
+            if (blacklistTokenService.isTokenBlacklisted(jwtToken)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token is blacklisted");
+                return;
+            }
+
+            final String userEmail = jwtService.extractUserEmail(jwtToken);
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             if (userEmail != null && authentication == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-                if (jwtService.isTokenValid(jwt, userDetails)) {
+                if (jwtService.isTokenValid(jwtToken, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,

@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Collection;
 import java.util.List;
+import java.util.Date;
 
 @Data
 @Builder
@@ -46,6 +47,8 @@ public class User implements UserDetails {
   private Set<Role> roles = new HashSet<>();
   @DBRef
   private Organization organization;
+  @JsonIgnore
+  private Date deletedAt;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

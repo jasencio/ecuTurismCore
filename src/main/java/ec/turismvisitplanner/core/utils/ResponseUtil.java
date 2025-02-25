@@ -15,6 +15,13 @@ public class ResponseUtil {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    public static ResponseEntity<Map<String, Object>> success(String message) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", HttpStatus.OK.value());
+        response.put("message", message);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     public static ResponseEntity<Map<String, Object>> success(Object data) {
         Map<String, Object> response = new HashMap<>();
         response.put("status", HttpStatus.OK.value());

@@ -44,4 +44,5 @@ public class AuthenticationController {
         loginResponse.setToken(jwtService.generateToken(authenticatedUser));
         return ResponseEntity.ok(loginResponse);
     }
+
 }

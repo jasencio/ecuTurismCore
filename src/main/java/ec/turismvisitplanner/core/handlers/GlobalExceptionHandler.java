@@ -1,6 +1,7 @@
 package ec.turismvisitplanner.core.handlers;
 
 import ec.turismvisitplanner.core.exceptions.CustomException;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +9,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -77,5 +79,27 @@ public class GlobalExceptionHandler {
         response.put("timestamp", LocalDateTime.now());
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<Map<String, Object>> handleGlobalException(ExpiredJwtException ex) {
+        logger.error("Unhandled error: ", ex);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", HttpStatus.UNAUTHORIZED.value());
+        response.put("timestamp", LocalDateTime.now());
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleGlobalException(BadCredentialsException ex) {
+        logger.error("Unhandled error: ", ex);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", HttpStatus.UNAUTHORIZED.value());
+        response.put("timestamp", LocalDateTime.now());
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
+
 
 }
