@@ -1,6 +1,6 @@
 package ec.turismvisitplanner.core.controllers.user;
 
-import ec.turismvisitplanner.core.security.services.AuthenticationService;
+import ec.turismvisitplanner.core.security.services.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user/session")
 public class SessionController {
 
-    private final AuthenticationService authenticationService;
+    private final AuthService authenticationService;
 
-    private SessionController(AuthenticationService authenticationService){
+    private SessionController(AuthService authenticationService){
         this.authenticationService = authenticationService;
     }
 

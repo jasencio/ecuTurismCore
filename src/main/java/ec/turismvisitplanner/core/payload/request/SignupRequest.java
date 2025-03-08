@@ -12,8 +12,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 public class SignupRequest {
-    @NotBlank
-    private String username;
+
     @NotBlank
     private String name;
     @NotBlank
@@ -23,7 +22,5 @@ public class SignupRequest {
     private String phone;
     @NotBlank
     private String password;
-    @NotBlank
-    private String passwordConfirmation;
 
 }

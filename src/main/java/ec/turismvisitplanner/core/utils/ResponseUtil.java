@@ -31,7 +31,7 @@ public class ResponseUtil {
 
     public static ResponseEntity<Map<String, Object>> error(String message, HttpStatus status) {
         Map<String, Object> response = new HashMap<>();
-        response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.put("status", status);
         response.put("message", message);
         return new ResponseEntity<>(response, status);
     }

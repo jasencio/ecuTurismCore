@@ -5,7 +5,7 @@ import ec.turismvisitplanner.core.mapper.UserMapper;
 import ec.turismvisitplanner.core.models.User;
 import ec.turismvisitplanner.core.payload.request.UpdateUserRequest;
 import ec.turismvisitplanner.core.repository.UserRepository;
-import ec.turismvisitplanner.core.security.services.AuthenticationService;
+import ec.turismvisitplanner.core.security.services.AuthService;
 import ec.turismvisitplanner.core.utils.ResponseUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
@@ -24,10 +24,10 @@ public class UserProfileService {
     private final UserRepository userRepository;
     private final MessageSource messageSource;
     private final UserMapper userMapper;
-    private final AuthenticationService authenticationService;
+    private final AuthService authenticationService;
 
 
-    public UserProfileService(UserRepository userRepository , MessageSource messageSource, UserMapper userMapper, AuthenticationService authenticationService) {
+    public UserProfileService(UserRepository userRepository , MessageSource messageSource, UserMapper userMapper, AuthService authenticationService) {
         this.userRepository = userRepository;
         this.messageSource = messageSource;
         this.userMapper = userMapper;

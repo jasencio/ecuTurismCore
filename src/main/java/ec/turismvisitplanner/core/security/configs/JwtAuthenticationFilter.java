@@ -3,79 +3,72 @@ package ec.turismvisitplanner.core.security.configs;
 import ec.turismvisitplanner.core.security.services.JwtService;
 import ec.turismvisitplanner.core.services.BlacklistTokenService;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import java.io.IOException;
+import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final HandlerExceptionResolver handlerExceptionResolver;
 
+    private final HandlerExceptionResolver handlerExceptionResolver;
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final BlacklistTokenService blacklistTokenService;
-
-    public JwtAuthenticationFilter(
-            JwtService jwtService,
-            UserDetailsService userDetailsService,
-            HandlerExceptionResolver handlerExceptionResolver,
-            BlacklistTokenService blacklistTokenService
-    ) {
-        this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
-        this.handlerExceptionResolver = handlerExceptionResolver;
-        this.blacklistTokenService = blacklistTokenService;
-    }
 
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
-    ) throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
-
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
+            @NonNull FilterChain filterChain) {
         try {
-            final String jwtToken = authHeader.substring(7);
+            final String authHeader = request.getHeader("Authorization");
 
-            if (blacklistTokenService.isTokenBlacklisted(jwtToken)) {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+            final String jwt = authHeader.substring(7);
+
+            if (blacklistTokenService.isTokenBlacklisted(jwt)) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token is blacklisted");
                 return;
             }
 
-            final String userEmail = jwtService.extractUserEmail(jwtToken);
+            String userEmail = jwtService.extractUserEmail(jwt);
+            List<String> roles = jwtService.extractRoles(jwt);
 
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-            if (userEmail != null && authentication == null) {
+            if (StringUtils.hasText(userEmail)
+                    && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-                if (jwtService.isTokenValid(jwtToken, userDetails)) {
+                if (jwtService.isTokenValid(jwt, userDetails)) {
+                    List<SimpleGrantedAuthority> authorities = roles.stream()
+                            .map(SimpleGrantedAuthority::new)
+                            .toList();
+                    SecurityContext context = SecurityContextHolder.getContext();
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
-                            userDetails.getAuthorities()
+                            authorities
                     );
-
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                    SecurityContextHolder.setContext(context);
                 }
             }
 

@@ -1,10 +1,10 @@
 package ec.turismvisitplanner.core.models.enums;
 
 public enum ERole {
-  ROLE_ADMIN_SYSTEM("ROLE_ADMIN_SYSTEM"),
-  ROLE_ADMIN_COMPANY("ROLE_ADMIN_COMPANY"),
-  ROLE_TOURIST_GUIDE("ROLE_TOURIST_GUIDE"),
-  ROLE_TOURIST("ROLE_TOURIST");
+  ADMIN_SYSTEM("ADMIN_SYSTEM"),
+  ADMIN_COMPANY("ADMIN_COMPANY"),
+  TOURIST_GUIDE("TOURIST_GUIDE"),
+  TOURIST("TOURIST");
 
   private final String value;
 

@@ -50,6 +50,10 @@ public class User implements UserDetails {
   @JsonIgnore
   private Date deletedAt;
 
+  public String getFullName(){
+    return this.name;
+  }
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return List.of();
@@ -80,7 +84,4 @@ public class User implements UserDetails {
     return true;
   }
 
-  public String getFullName(){
-    return this.name;
-  }
 }

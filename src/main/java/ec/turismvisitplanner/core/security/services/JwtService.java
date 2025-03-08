@@ -1,20 +1,28 @@
 package ec.turismvisitplanner.core.security.services;
 
+import ec.turismvisitplanner.core.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
+@Component
+@RequiredArgsConstructor
 public class JwtService {
     @Value("${security.jwt.secret-key}")
     private String secretKey;
@@ -22,40 +30,47 @@ public class JwtService {
     @Value("${security.jwt.expiration-time}")
     private long jwtExpiration;
 
+    private final String ROLES = "roles";
+
     public String extractUserEmail(String token) {
         return extractClaim(token, Claims::getSubject);
     }
+
+    // Extract roles from JWT claims
+    public List<String> extractRoles(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get(ROLES, List.class);
+    }
+
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public String getToken(UserDetails user) {
+        return generateToken(new HashMap<>(), user, jwtExpiration);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
-    }
-
-    public long getExpirationTime() {
-        return jwtExpiration;
-    }
-
-    private String buildToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails,
-            long expiration
-    ) {
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, long validity) {
+        if (userDetails instanceof User appUser) {
+            List<String> roles = appUser.getRoles().stream()
+                    .map(role -> role.getName().name())
+                    .collect(Collectors.toList());
+            extraClaims.put(ROLES, roles);
+        }
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * validity))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public long getExpirationTime() {
+        return 1000 * 60 * 60 * jwtExpiration;
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
