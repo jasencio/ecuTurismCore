@@ -3,9 +3,10 @@ package ec.turismvisitplanner.core.controllers.location;
 import ec.turismvisitplanner.core.models.Location;
 import ec.turismvisitplanner.core.payload.request.LocationRequest;
 import ec.turismvisitplanner.core.services.LocationService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,33 +19,28 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/location")
+@RequiredArgsConstructor
 public class LocationController {
 
-    @Autowired
-    LocationService locationService;
+    private final LocationService locationService;
 
-    @GetMapping("")
+    @GetMapping()
     public List<Location> getLocations() {
-        return locationService.getAll();
+        return locationService.getLocations();
     }
 
-    @PostMapping("")
-    public ResponseEntity<?> createLocation(@RequestBody LocationRequest locationRequest) {
-        try {
-            Location location = locationService.createLocation(locationRequest);
-            return new ResponseEntity<>(location, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PostMapping()
+    public ResponseEntity<?> createLocation(@Valid @RequestBody LocationRequest locationRequest) {
+            return locationService.createLocation(locationRequest);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Location> updateTutorial(@PathVariable("id") String id, @RequestBody LocationRequest locationRequest) {
-        Location location = locationService.updateLocation(id, locationRequest);
-        if (location != null) {
-            return new ResponseEntity<>(location, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> updateLocation(@PathVariable("id") String id, @Valid @RequestBody LocationRequest locationRequest) {
+        return locationService.updateLocation(id, locationRequest);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteLocation(@PathVariable("id") String id) {
+       return locationService.deleteLocation(id);
     }
 }

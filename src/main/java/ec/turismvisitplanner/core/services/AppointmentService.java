@@ -8,7 +8,8 @@ import ec.turismvisitplanner.core.payload.request.AppointmentRequest;
 import ec.turismvisitplanner.core.repository.AppointmentRepository;
 import ec.turismvisitplanner.core.repository.RouteRepository;
 import ec.turismvisitplanner.core.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import ec.turismvisitplanner.core.utils.SessionUtils;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -16,19 +17,26 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class AppointmentService {
 
-    @Autowired
-    AppointmentRepository appointmentRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final UserRepository userRepository;
+    private final RouteRepository routeRepository;
 
-    @Autowired
-    UserRepository userRepository;
+    public List<Appointment> getTouristAppointments() {
+        User user = SessionUtils.getUserOnSession();
+        return appointmentRepository.findByTouristId(user.getId());
+    }
 
-    @Autowired
-    RouteRepository routeRepository;
+    public List<Appointment> getTouristGuideAppointments() {
+        User user = SessionUtils.getUserOnSession();
+        return appointmentRepository.findByTouristGuideId(user.getId());
+    }
 
-    public List<Appointment> getAll() {
-        return appointmentRepository.findAll();
+    public List<Appointment> getCompanyAppointments() {
+        User user = SessionUtils.getUserOnSession();
+        return appointmentRepository.findByRouteLocationOrganizationId(user.getId());
     }
 
     public Appointment createAppointment(AppointmentRequest appointmentRequest) {

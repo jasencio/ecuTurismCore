@@ -31,4 +31,6 @@ public class Route {
     private Hardness hardness;
 
     private String distance;
+
+    private File mainImage;
 }

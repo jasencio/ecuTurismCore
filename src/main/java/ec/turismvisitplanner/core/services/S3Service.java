@@ -1,13 +1,16 @@
 package ec.turismvisitplanner.core.services;
 
+import ec.turismvisitplanner.core.models.File;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
@@ -21,17 +24,39 @@ public class S3Service {
         this.s3Client = s3Client;
     }
 
-    public String uploadFile(MultipartFile file) throws IOException {
-        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+    public File uploadFile(MultipartFile file) throws IOException {
+        String originalFileName = file.getOriginalFilename();
+        String fileExtension = "";
+        if (originalFileName != null && originalFileName.contains(".")) {
+            fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        }
+        LocalDate today = LocalDate.now();
+        String folderPath = today.getYear() + "/" + today.getMonthValue() + "/" + today.getDayOfMonth();
+
+        String fileName = UUID.randomUUID() + fileExtension;
+
+        String fullPathFolder = folderPath + "/" + fileName;
 
         s3Client.putObject(
                 PutObjectRequest.builder()
                         .bucket(bucketName)
-                        .key(fileName)
+                        .key(fullPathFolder)
+                        .contentType(file.getContentType())
                         .build(),
                 RequestBody.fromBytes(file.getBytes())
         );
 
-        return "https://" + bucketName + ".s3.amazonaws.com/" + fileName; // Public URL
+        return File.builder().fullPath(fullPathFolder).publicUrl("https://" + bucketName + ".s3.amazonaws.com/").build();
     }
+
+    public void deleteFile(String fullFilePath) {
+        DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fullFilePath)
+                .build();
+
+        s3Client.deleteObject(deleteRequest);
+    }
+
+
 }
