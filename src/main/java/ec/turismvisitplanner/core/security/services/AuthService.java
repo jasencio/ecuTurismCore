@@ -2,7 +2,6 @@ package ec.turismvisitplanner.core.security.services;
 
 import ec.turismvisitplanner.core.exceptions.CustomException;
 import ec.turismvisitplanner.core.mapper.UserMapper;
-import ec.turismvisitplanner.core.models.Role;
 import ec.turismvisitplanner.core.models.User;
 import ec.turismvisitplanner.core.models.enums.ERole;
 import ec.turismvisitplanner.core.payload.request.LoginRequest;
@@ -60,14 +59,8 @@ public class AuthService {
                 phone(signUpRequest.getPhone()).
                 password(passwordEncoder.encode(signUpRequest.getPassword())).build();
 
-
-        Set<Role> roles = new HashSet<>();
-
-
-        Role userRole = roleRepository.findByName(ERole.TOURIST)
-                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-        roles.add(userRole);
-
+        Set<ERole> roles = new HashSet<>();
+        roles.add(ERole.TOURIST);
 
         user.setRoles(roles);
         return userRepository.save(user);

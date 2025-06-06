@@ -55,7 +55,7 @@ public class JwtService {
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, long validity) {
         if (userDetails instanceof User appUser) {
             List<String> roles = appUser.getRoles().stream()
-                    .map(role -> role.getName().name())
+                    .map(Enum::name)
                     .collect(Collectors.toList());
             extraClaims.put(ROLES, roles);
         }

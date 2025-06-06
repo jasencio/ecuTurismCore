@@ -13,8 +13,8 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.Locale;
 
@@ -25,13 +25,15 @@ public class UserProfileService {
     private final MessageSource messageSource;
     private final UserMapper userMapper;
     private final AuthService authenticationService;
+    private final PasswordEncoder passwordEncoder;
 
 
-    public UserProfileService(UserRepository userRepository , MessageSource messageSource, UserMapper userMapper, AuthService authenticationService) {
+    public UserProfileService(UserRepository userRepository , MessageSource messageSource, UserMapper userMapper, AuthService authenticationService,PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.messageSource = messageSource;
         this.userMapper = userMapper;
         this.authenticationService = authenticationService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public ResponseEntity<?> getUserProfile() {
@@ -62,7 +64,7 @@ public class UserProfileService {
             user.setEmail(updateUserRequest.getEmail());
         }
         if(StringUtils.isNoneEmpty(updateUserRequest.getPassword())){
-            user.setPassword(updateUserRequest.getPassword());
+            user.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
         }
         userRepository.save(user);
         return ResponseUtil.success(userMapper.toUserDto(user));

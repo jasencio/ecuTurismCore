@@ -1,5 +1,6 @@
 package ec.turismvisitplanner.core.payload.request;
 
+import ec.turismvisitplanner.core.models.enums.ERole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,6 @@ import java.util.Set;
 @SuperBuilder(toBuilder = true)
 public class UserRequest extends SignupRequest{
 
-    private Set<String> idRoles;
+    private Set<ERole> roles;
     private String idOrganization;
 }

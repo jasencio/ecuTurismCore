@@ -51,7 +51,7 @@ public class UserService {
                 name(userRequest.getName()).
                 email(userRequest.getEmail()).
                 phone(userRequest.getPhone()).
-                roles(findRoles(userRequest.getIdRoles())).
+                roles(userRequest.getRoles()).
                 organization(findOrganization(userRequest.getIdOrganization())).
                 password(encoder.encode(userRequest.getPassword())).build();
         return userRepository.save(user);
@@ -62,15 +62,14 @@ public class UserService {
 
         if (user.isPresent()) {
             Organization organization = findOrganization(userRequest.getIdOrganization());
-            Set<Role> roles = findRoles(userRequest.getIdRoles());
             User _user = user.get();
-            _user.setName(userRequest.getName()!=null?userRequest.getName():_user.getName());
-            _user.setEmail(userRequest.getEmail()!=null?userRequest.getEmail():_user.getEmail());
-            _user.setPhone(userRequest.getPhone()!=null?userRequest.getPhone():_user.getPhone());
-            _user.setPassword(userRequest.getPassword()!=null?encoder.encode(userRequest.getPassword()):_user.getPassword());
+            _user.setName(userRequest.getName() != null ? userRequest.getName() : _user.getName());
+            _user.setEmail(userRequest.getEmail() != null ? userRequest.getEmail() : _user.getEmail());
+            _user.setPhone(userRequest.getPhone() != null ? userRequest.getPhone() : _user.getPhone());
+            _user.setPassword(userRequest.getPassword() != null ? encoder.encode(userRequest.getPassword()) : _user.getPassword());
             _user.setOrganization(organization != null ? organization
                     : _user.getOrganization());
-            _user.setRoles(roles!=null? roles : _user.getRoles());
+            _user.setRoles(userRequest.getRoles() != null ? userRequest.getRoles() : _user.getRoles());
             return userRepository.save(_user);
         } else {
             return null;

@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.Collection;
 import java.util.List;
 import java.util.Date;
+import ec.turismvisitplanner.core.models.enums.ERole;
 
 @Data
 @Builder
@@ -43,8 +44,7 @@ public class User implements UserDetails {
   @Size(max = 120)
   @JsonIgnore
   private String password;
-  @DBRef
-  private Set<Role> roles = new HashSet<>();
+  private Set<ERole> roles;
   @DBRef
   private Organization organization;
   @JsonIgnore

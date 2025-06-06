@@ -16,7 +16,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "locations")
-public class Location {
+public class  Location {
 
     @Id
     private String id;
