@@ -16,5 +16,10 @@ public class Organization {
     @Id
     private String id;
     private String name;
-    private Date deletedAt;
+    private String description;
+    private String phone;
+    private String address;
+    private Date createdAt;
+    private Date updatedAt;
+    private File image;
 }

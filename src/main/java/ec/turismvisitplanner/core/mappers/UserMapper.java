@@ -1,4 +1,4 @@
-package ec.turismvisitplanner.core.mapper;
+package ec.turismvisitplanner.core.mappers;
 
 import ec.turismvisitplanner.core.models.User;
 import ec.turismvisitplanner.core.payload.dto.UserDto;

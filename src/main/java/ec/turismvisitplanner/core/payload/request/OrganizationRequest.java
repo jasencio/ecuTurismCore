@@ -12,4 +12,7 @@ import lombok.NoArgsConstructor;
 public class OrganizationRequest {
     private String id;
     private String name;
+    private String description;
+    private String phone;
+    private String address;
 }

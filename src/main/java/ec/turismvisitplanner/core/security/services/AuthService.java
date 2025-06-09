@@ -1,7 +1,7 @@
 package ec.turismvisitplanner.core.security.services;
 
 import ec.turismvisitplanner.core.exceptions.CustomException;
-import ec.turismvisitplanner.core.mapper.UserMapper;
+import ec.turismvisitplanner.core.mappers.UserMapper;
 import ec.turismvisitplanner.core.models.User;
 import ec.turismvisitplanner.core.models.enums.ERole;
 import ec.turismvisitplanner.core.payload.request.LoginRequest;
