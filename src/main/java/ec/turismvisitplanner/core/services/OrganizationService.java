@@ -8,8 +8,8 @@ import ec.turismvisitplanner.core.repository.OrganizationRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
+import java.util.Base64;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -19,7 +19,6 @@ import java.util.Optional;
 @AllArgsConstructor
 public class OrganizationService {
 
-   
     private OrganizationRepository organizationRepository;
     private S3Service s3Service;
 
@@ -27,7 +26,7 @@ public class OrganizationService {
         return organizationRepository.findAll();
     }
 
-    public Organization createOrganization(OrganizationRequest organizationRequest, MultipartFile image) {
+    public Organization createOrganization(OrganizationRequest organizationRequest) {
         if (organizationRequest == null) {
             throw new IllegalArgumentException("Organization request cannot be null");
         }
@@ -35,13 +34,25 @@ public class OrganizationService {
         if (organizationRequest.getName() == null || organizationRequest.getName().trim().isEmpty()) {
             throw new IllegalArgumentException("Organization name cannot be null or empty");
         }
-        if(image == null || image.isEmpty()){
+        
+        if (organizationRequest.getImageBase64() == null || organizationRequest.getImageBase64().trim().isEmpty()) {
             throw new IllegalArgumentException("Image cannot be null or empty");
         }
 
         File fileSaved;
         try {
-             fileSaved = s3Service.uploadFile(image);
+            // Decode base64 string to byte array
+            String base64Image = organizationRequest.getImageBase64();
+            if (base64Image.contains(",")) {
+                base64Image = base64Image.split(",")[1];
+            }
+            byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+            
+            // Create a ByteArrayInputStream from the decoded bytes
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(imageBytes);
+            
+            // Upload to S3
+            fileSaved = s3Service.uploadFileFromStream(inputStream, "image.jpg");
         } catch (IOException e) {
             throw new CustomException("Archivo no pudo ser guardado", HttpStatus.BAD_REQUEST.value());
         }
@@ -52,6 +63,7 @@ public class OrganizationService {
                 .description(organizationRequest.getDescription())
                 .phone(organizationRequest.getPhone())
                 .address(organizationRequest.getAddress())
+                .isActive(organizationRequest.getIsActive())
                 .createdAt(now)
                 .updatedAt(now)
                 .image(fileSaved)
@@ -59,7 +71,7 @@ public class OrganizationService {
         return organizationRepository.save(organization);
     }
 
-    public Organization updateOrganization(String id, OrganizationRequest organizationRequest, MultipartFile image) {
+    public Organization updateOrganization(String id, OrganizationRequest organizationRequest) {
         if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("Organization ID cannot be null or empty");
         }
@@ -86,12 +98,24 @@ public class OrganizationService {
             if (organizationRequest.getAddress() != null) {
                 organization.setAddress(organizationRequest.getAddress());
             }
+            organization.setIsActive(organizationRequest.getIsActive());
         }
 
         // Update image if provided
-        if (image != null && !image.isEmpty()) {
+        if (organizationRequest != null && organizationRequest.getImageBase64() != null && !organizationRequest.getImageBase64().trim().isEmpty()) {
             try {
-                File fileSaved = s3Service.uploadFile(image);
+                // Decode base64 string to byte array
+                String base64Image = organizationRequest.getImageBase64();
+                if (base64Image.contains(",")) {
+                    base64Image = base64Image.split(",")[1];
+                }
+                byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+                
+                // Create a ByteArrayInputStream from the decoded bytes
+                ByteArrayInputStream inputStream = new ByteArrayInputStream(imageBytes);
+                
+                // Upload to S3
+                File fileSaved = s3Service.uploadFileFromStream(inputStream, "image.jpg");
                 organization.setImage(fileSaved);
             } catch (IOException e) {
                 throw new CustomException("Archivo no pudo ser guardado", HttpStatus.BAD_REQUEST.value());
@@ -104,9 +128,9 @@ public class OrganizationService {
         return organizationRepository.save(organization);
     }
 
-    public Organization getOrganizationById(String id){
+    public Organization getOrganizationById(String id) {
         Optional<Organization> organization = organizationRepository.findById(id);
-        if(organization.isEmpty()){
+        if(organization.isEmpty()) {
             throw new IllegalArgumentException("Organization not found");
         }
         return organization.get();

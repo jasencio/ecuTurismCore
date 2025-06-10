@@ -7,8 +7,9 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -58,5 +59,30 @@ public class S3Service {
         s3Client.deleteObject(deleteRequest);
     }
 
+    public File uploadFileFromStream(ByteArrayInputStream inputStream, String fileName) throws IOException {
+        try (inputStream) {
+            String fileExtension = "";
+            if (fileName != null && fileName.contains(".")) {
+                fileExtension = fileName.substring(fileName.lastIndexOf("."));
+            }
+            LocalDate today = LocalDate.now();
+            String folderPath = today.getYear() + "/" + today.getMonthValue() + "/" + today.getDayOfMonth();
+            String uniqueFileName = UUID.randomUUID() + fileExtension;
+            String key = folderPath + "/" + uniqueFileName;
 
+            s3Client.putObject(PutObjectRequest.builder()
+                            .bucket(bucketName)
+                            .key(key)
+                            .contentType("image/jpeg")
+                            .build(),
+                    RequestBody.fromInputStream(inputStream, inputStream.available()));
+
+            String url = s3Client.utilities().getUrl(GetUrlRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build()).toString();
+
+            return File.builder().fullPath(key).publicUrl(url).build();
+        }
+    }
 }

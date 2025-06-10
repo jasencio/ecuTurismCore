@@ -15,4 +15,6 @@ public class OrganizationRequest {
     private String description;
     private String phone;
     private String address;
+    private String imageBase64;
+    private Boolean isActive;
 }

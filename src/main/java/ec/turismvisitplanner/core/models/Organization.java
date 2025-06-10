@@ -19,6 +19,7 @@ public class Organization {
     private String description;
     private String phone;
     private String address;
+    private Boolean isActive;
     private Date createdAt;
     private Date updatedAt;
     private File image;
