@@ -25,4 +25,8 @@ public class RouteRequest {
     private Hardness hardness;
 
     private String distance;
+
+    private String imageBase64;
+
+    private Boolean isActive;
 }

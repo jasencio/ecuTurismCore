@@ -1,4 +1,4 @@
-package ec.tourismvisitplanner.core.controllers.user.adminCompany;
+package ec.tourismvisitplanner.core.controllers.user.admincompany;
 
 import ec.tourismvisitplanner.core.models.Organization;
 import ec.tourismvisitplanner.core.payload.request.OrganizationRequest;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/admin-company")
 @AllArgsConstructor
-public class AdminCompanyController {
+public class OrganizationAdminCompanyController {
 
     private final AdminCompanyService adminCompanyService;
 

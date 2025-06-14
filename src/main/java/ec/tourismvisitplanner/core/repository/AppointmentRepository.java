@@ -8,5 +8,5 @@ import java.util.List;
 public interface AppointmentRepository extends MongoRepository<Appointment, String> {
     List<Appointment> findByTouristId(String touristId);
     List<Appointment> findByTouristGuideId(String touristGuideId);
-    List<Appointment> findByRouteLocationOrganizationId(String organizationId);
+    List<Appointment> findByRouteOrganizationId(String organizationId);
 }

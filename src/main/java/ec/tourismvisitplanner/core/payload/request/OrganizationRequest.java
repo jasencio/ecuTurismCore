@@ -15,6 +15,14 @@ public class OrganizationRequest {
     private String description;
     private String phone;
     private String address;
+    private String timeOpenWeek;
+    private String timeCloseWeek;
+    private String timeOpenSaturday;
+    private String timeCloseSaturday;
+    private String timeOpenSunday;
+    private String timeCloseSunday;
+    private String daysWeek;
+    private String daysWeekDisabled;
     private String imageBase64;
     private Boolean isActive;
 }

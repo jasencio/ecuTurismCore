@@ -36,7 +36,7 @@ public class AppointmentService {
 
     public List<Appointment> getCompanyAppointments() {
         User user = SessionUtils.getUserOnSession();
-        return appointmentRepository.findByRouteLocationOrganizationId(user.getId());
+        return appointmentRepository.findByRouteOrganizationId(user.getOrganization().getId());
     }
 
     public Appointment createAppointment(AppointmentRequest appointmentRequest) {

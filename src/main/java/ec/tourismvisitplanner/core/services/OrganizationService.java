@@ -5,11 +5,11 @@ import ec.tourismvisitplanner.core.models.File;
 import ec.tourismvisitplanner.core.models.Organization;
 import ec.tourismvisitplanner.core.payload.request.OrganizationRequest;
 import ec.tourismvisitplanner.core.repository.OrganizationRepository;
+import ec.tourismvisitplanner.core.utils.FileUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import java.util.Base64;
-import java.io.ByteArrayInputStream;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.Optional;
 public class OrganizationService {
 
     private OrganizationRepository organizationRepository;
-    private S3Service s3Service;
+    private FileUtils fileUtils;
 
     public List<Organization> getAll() {
         return organizationRepository.findAll();
@@ -34,25 +34,15 @@ public class OrganizationService {
         if (organizationRequest.getName() == null || organizationRequest.getName().trim().isEmpty()) {
             throw new IllegalArgumentException("Organization name cannot be null or empty");
         }
-        
+
         if (organizationRequest.getImageBase64() == null || organizationRequest.getImageBase64().trim().isEmpty()) {
             throw new IllegalArgumentException("Image cannot be null or empty");
         }
 
         File fileSaved;
         try {
-            // Decode base64 string to byte array
-            String base64Image = organizationRequest.getImageBase64();
-            if (base64Image.contains(",")) {
-                base64Image = base64Image.split(",")[1];
-            }
-            byte[] imageBytes = Base64.getDecoder().decode(base64Image);
-            
-            // Create a ByteArrayInputStream from the decoded bytes
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(imageBytes);
-            
             // Upload to S3
-            fileSaved = s3Service.uploadFileFromStream(inputStream, "image.jpg");
+            fileSaved = fileUtils.saveImageBase64(organizationRequest.getImageBase64());
         } catch (IOException e) {
             throw new CustomException("Archivo no pudo ser guardado", HttpStatus.BAD_REQUEST.value());
         }
@@ -77,13 +67,13 @@ public class OrganizationService {
         }
 
         Optional<Organization> existingOrganization = organizationRepository.findById(id);
-        
+
         if (existingOrganization.isEmpty()) {
             return null;
         }
 
         Organization organization = existingOrganization.get();
-        
+
         // Update fields only if they are not null in the request
         if (organizationRequest != null) {
             if (organizationRequest.getName() != null && !organizationRequest.getName().trim().isEmpty()) {
@@ -104,18 +94,9 @@ public class OrganizationService {
         // Update image if provided
         if (organizationRequest != null && organizationRequest.getImageBase64() != null && !organizationRequest.getImageBase64().trim().isEmpty()) {
             try {
-                // Decode base64 string to byte array
-                String base64Image = organizationRequest.getImageBase64();
-                if (base64Image.contains(",")) {
-                    base64Image = base64Image.split(",")[1];
-                }
-                byte[] imageBytes = Base64.getDecoder().decode(base64Image);
-                
-                // Create a ByteArrayInputStream from the decoded bytes
-                ByteArrayInputStream inputStream = new ByteArrayInputStream(imageBytes);
-                
+                File fileSaved;
                 // Upload to S3
-                File fileSaved = s3Service.uploadFileFromStream(inputStream, "image.jpg");
+                fileSaved = fileUtils.saveImageBase64(organizationRequest.getImageBase64());
                 organization.setImage(fileSaved);
             } catch (IOException e) {
                 throw new CustomException("Archivo no pudo ser guardado", HttpStatus.BAD_REQUEST.value());
@@ -130,7 +111,7 @@ public class OrganizationService {
 
     public Organization getOrganizationById(String id) {
         Optional<Organization> organization = organizationRepository.findById(id);
-        if(organization.isEmpty()) {
+        if (organization.isEmpty()) {
             throw new IllegalArgumentException("Organization not found");
         }
         return organization.get();

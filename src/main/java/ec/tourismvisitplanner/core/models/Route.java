@@ -20,7 +20,7 @@ public class Route {
     private String id;
 
     @DBRef
-    private Location location;
+    private Organization organization;
 
     private String name;
 
@@ -33,4 +33,6 @@ public class Route {
     private String distance;
 
     private File mainImage;
+
+    private Boolean isActive;
 }
