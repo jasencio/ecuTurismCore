@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -21,8 +22,7 @@ public class OrganizationRequest {
     private String timeCloseSaturday;
     private String timeOpenSunday;
     private String timeCloseSunday;
-    private String daysWeek;
-    private String daysWeekDisabled;
+    private List<String> daysWeekEnabled;
     private String imageBase64;
     private Boolean isActive;
 }

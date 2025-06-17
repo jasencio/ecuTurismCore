@@ -53,6 +53,13 @@ public class OrganizationService {
                 .description(organizationRequest.getDescription())
                 .phone(organizationRequest.getPhone())
                 .address(organizationRequest.getAddress())
+                .timeOpenWeek(organizationRequest.getTimeOpenWeek())
+                .timeCloseWeek(organizationRequest.getTimeCloseWeek())
+                .timeOpenSaturday(organizationRequest.getTimeOpenSaturday())
+                .timeCloseSaturday(organizationRequest.getTimeCloseSaturday())
+                .timeOpenSunday(organizationRequest.getTimeOpenSunday())
+                .timeCloseSunday(organizationRequest.getTimeCloseSunday())
+                .daysWeekEnabled(organizationRequest.getDaysWeekEnabled())
                 .isActive(organizationRequest.getIsActive())
                 .createdAt(now)
                 .updatedAt(now)
@@ -88,6 +95,29 @@ public class OrganizationService {
             if (organizationRequest.getAddress() != null) {
                 organization.setAddress(organizationRequest.getAddress());
             }
+
+            if (organizationRequest.getTimeOpenWeek() != null) {
+                organization.setTimeOpenWeek(organizationRequest.getTimeOpenWeek());
+            }
+            if (organizationRequest.getTimeCloseWeek() != null) {
+                organization.setTimeCloseWeek(organizationRequest.getTimeCloseWeek());
+            }
+            if (organizationRequest.getTimeOpenSaturday() != null) {
+                organization.setTimeOpenSaturday(organizationRequest.getTimeOpenSaturday());
+            }
+            if (organizationRequest.getTimeCloseSaturday() != null) {
+                organization.setTimeCloseSaturday(organizationRequest.getTimeCloseSaturday());
+            }
+            if (organizationRequest.getTimeOpenSunday() != null) {
+                organization.setTimeOpenSunday(organizationRequest.getTimeOpenSunday());
+            }
+            if (organizationRequest.getTimeCloseSunday() != null) {
+                organization.setTimeCloseSunday(organizationRequest.getTimeCloseSunday());
+            }
+            if (organizationRequest.getDaysWeekEnabled() != null) {
+                organization.setDaysWeekEnabled(organizationRequest.getDaysWeekEnabled());
+            }
+            
             organization.setIsActive(organizationRequest.getIsActive());
         }
 

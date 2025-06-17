@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -25,8 +26,7 @@ public class Organization {
     private String timeCloseSaturday;
     private String timeOpenSunday;
     private String timeCloseSunday;
-    private String daysWeek;
-    private String daysWeekDisabled;
+    private List<String> daysWeekEnabled;
     private Boolean isActive;
     private Date createdAt;
     private Date updatedAt;
