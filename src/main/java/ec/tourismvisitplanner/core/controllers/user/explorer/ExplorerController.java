@@ -1,11 +1,15 @@
 package ec.tourismvisitplanner.core.controllers.user.explorer;
 
+import ec.tourismvisitplanner.core.models.Appointment;
 import ec.tourismvisitplanner.core.models.Organization;
 import ec.tourismvisitplanner.core.models.Route;
+import ec.tourismvisitplanner.core.payload.request.AppointmentRequest;
 import ec.tourismvisitplanner.core.services.ExplorerService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,6 +40,11 @@ public class ExplorerController {
     @GetMapping("/routes/{id}")
     public Route getRoute(@PathVariable String id){
         return explorerService.getRoute(id);
+    }
+
+    @PostMapping("/appointments")
+    public Appointment createAppointment(@RequestBody AppointmentRequest appointmentRequest){
+        return explorerService.createAppointment(appointmentRequest);
     }
 
 }

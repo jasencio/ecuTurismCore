@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.Date;
 
 @Data
@@ -12,16 +11,9 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class AppointmentRequest {
-
-    private String id;
-
-    private String idTourist;
-
-    private String idTouristGuide;
-
-    private String idRoute;
-
+    private String routeId;
     private Date eventDate;
-
-    private int groupSize;
+    private String eventTimeInit;
+    private String eventTimeEnd;
+    private Integer groupSize;
 }

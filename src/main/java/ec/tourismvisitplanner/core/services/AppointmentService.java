@@ -3,8 +3,6 @@ package ec.tourismvisitplanner.core.services;
 import ec.tourismvisitplanner.core.models.Appointment;
 import ec.tourismvisitplanner.core.models.Route;
 import ec.tourismvisitplanner.core.models.User;
-import ec.tourismvisitplanner.core.models.enums.AppointmentStatus;
-import ec.tourismvisitplanner.core.payload.request.AppointmentRequest;
 import ec.tourismvisitplanner.core.repository.AppointmentRepository;
 import ec.tourismvisitplanner.core.repository.RouteRepository;
 import ec.tourismvisitplanner.core.repository.UserRepository;
@@ -12,7 +10,6 @@ import ec.tourismvisitplanner.core.utils.SessionUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,19 +34,6 @@ public class AppointmentService {
     public List<Appointment> getCompanyAppointments() {
         User user = SessionUtils.getUserOnSession();
         return appointmentRepository.findByRouteOrganizationId(user.getOrganization().getId());
-    }
-
-    public Appointment createAppointment(AppointmentRequest appointmentRequest) {
-
-        Appointment appointment =
-                Appointment.builder().
-                        tourist(findUser(appointmentRequest.getIdTourist())).
-                        route(findRoute(appointmentRequest.getIdRoute())).
-                        eventDate(appointmentRequest.getEventDate()).
-                        eventCreated(new Date()).
-                        groupSize(appointmentRequest.getGroupSize()).status(AppointmentStatus.SCHEDULED).build();
-
-        return appointmentRepository.save(appointment);
     }
 
     public Appointment assignGuideAppointment(String idAppointment, String idTouristGuide) {
