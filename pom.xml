@@ -120,6 +120,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
+                    <release>17</release>
                     <source>1.8</source>
                     <target>1.8</target>
                     <annotationProcessorPaths>
