@@ -3,10 +3,10 @@ package ec.tourismvisitplanner.core.services.adminCompany;
 import ec.tourismvisitplanner.core.models.User;
 import ec.tourismvisitplanner.core.models.enums.ERole;
 import ec.tourismvisitplanner.core.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import lombok.AllArgsConstructor;
 
 import java.util.List;
 

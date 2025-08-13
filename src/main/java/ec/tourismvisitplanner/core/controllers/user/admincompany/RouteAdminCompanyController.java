@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 @RestController
@@ -24,7 +23,7 @@ public class RouteAdminCompanyController {
     @Autowired
     private RouteService routeService;
 
-    @GetMapping("")
+    @GetMapping()
     public List<Route> getRoutes() {
         return routeService.getRoutesByUserOrganization();
     }
@@ -36,7 +35,7 @@ public class RouteAdminCompanyController {
         return routeService.getRouteByIdAndUserOrganization(id);
     }
 
-    @PostMapping("")
+    @PostMapping()
     public ResponseEntity<?> createRoute(
             @Valid @RequestBody RouteRequest routeRequest) {
         return routeService.createRoute(routeRequest);

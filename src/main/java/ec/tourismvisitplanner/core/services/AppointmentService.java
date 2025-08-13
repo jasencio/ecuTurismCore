@@ -31,11 +31,6 @@ public class AppointmentService {
         return appointmentRepository.findByTouristGuideId(user.getId());
     }
 
-    public List<Appointment> getCompanyAppointments() {
-        User user = SessionUtils.getUserOnSession();
-        return appointmentRepository.findByRouteOrganizationId(user.getOrganization().getId());
-    }
-
     public Appointment assignGuideAppointment(String idAppointment, String idTouristGuide) {
 
 

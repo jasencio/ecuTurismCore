@@ -6,14 +6,11 @@ import ec.tourismvisitplanner.core.services.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/admin/appointments")
@@ -21,11 +18,6 @@ import java.util.List;
 public class AdminAppointmentController {
     
     private final AppointmentService appointmentService;
-
-    @GetMapping()
-    public List<Appointment> getAppointments() {
-        return appointmentService.getCompanyAppointments();
-    }
 
     @PostMapping("/{id}/assignGuide")
     public ResponseEntity<?> assignGuideAppointment(@PathVariable("id") String id, @RequestBody AssignGuideRequest assignGuideRequest) {

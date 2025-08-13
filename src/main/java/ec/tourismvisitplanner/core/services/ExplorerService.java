@@ -9,6 +9,7 @@ import ec.tourismvisitplanner.core.payload.request.AppointmentRequest;
 import ec.tourismvisitplanner.core.repository.AppointmentRepository;
 import ec.tourismvisitplanner.core.repository.OrganizationRepository;
 import ec.tourismvisitplanner.core.repository.RouteRepository;
+import ec.tourismvisitplanner.core.utils.SessionUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -137,4 +138,25 @@ public class ExplorerService {
         }
         return null;
     }
+
+    public List<Appointment> getAppointments() {
+        User user = SessionUtils.getUserOnSession();
+        return appointmentRepository.findByTouristId(user.getId());
+    }
+
+    public Appointment getAppointment(String idAppointment) {
+        User user = SessionUtils.getUserOnSession();
+        Optional<Appointment> appointment = appointmentRepository.findByIdAndTouristId(idAppointment, user.getId());
+        return appointment.orElse(null);
+    }
+
+    public void cancelAppointment(String idAppointment) {
+        User user = SessionUtils.getUserOnSession();
+        Optional<Appointment> appointment = appointmentRepository.findByIdAndTouristId(idAppointment, user.getId());
+        if (appointment.isPresent()) {
+            appointment.get().setStatus(AppointmentStatus.CANCELLED);
+            appointmentRepository.save(appointment.get());
+        }
+    }
+
 }
