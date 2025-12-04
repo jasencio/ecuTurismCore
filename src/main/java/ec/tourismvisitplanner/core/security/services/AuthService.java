@@ -42,44 +42,42 @@ public class AuthService {
     private final UserMapper userMapper;
     private final I18n i18n;
 
-
-    public User signup(SignupRequest signUpRequest) {
-
-
+    public ResponseEntity<?> signup(SignupRequest signUpRequest) {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            String message = i18n.getMessage("user.email.isTaken","El correo electrónico ya se encuentra en uso");
+            String message = i18n.getMessage("user.email.isTaken", "El correo electrónico ya se encuentra en uso");
             throw new CustomException(message, HttpStatus.BAD_REQUEST.value());
         }
-
         // Create new user's account
-        User user = User.
-                builder().
-                name(signUpRequest.getName()).
-                email(signUpRequest.getEmail()).
-                phone(signUpRequest.getPhone()).
-                password(passwordEncoder.encode(signUpRequest.getPassword())).build();
+        User user = User.builder().name(signUpRequest.getName()).email(signUpRequest.getEmail())
+                .phone(signUpRequest.getPhone()).password(passwordEncoder.encode(signUpRequest.getPassword())).build();
 
         Set<ERole> roles = new HashSet<>();
         roles.add(ERole.TOURIST);
 
         user.setRoles(roles);
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        if (savedUser == null) {
+            String message = i18n.getMessage("user.signup.failed", "El registro falló");
+            throw new CustomException(message, HttpStatus.BAD_REQUEST.value());
+        }
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail(signUpRequest.getEmail());
+        loginRequest.setPassword(signUpRequest.getPassword());
+        return login(loginRequest);
+
     }
 
     public ResponseEntity<?> login(LoginRequest loginRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),
-                        loginRequest.getPassword()
-                )
-        );
-        User userLoggedIn = userRepository.findByEmailAndDeletedAtIsNull(loginRequest.getEmail()).
-                orElseThrow(() -> {
-                            Locale locale = LocaleContextHolder.getLocale();
-                            String invalidTokenMessage = messageSource.getMessage("user.credentials.invalid.", null, "Credenciales inválidas", locale);
-                            return new SignatureException(invalidTokenMessage);
-                        }
-                );
+                        loginRequest.getPassword()));
+        User userLoggedIn = userRepository.findByEmailAndDeletedAtIsNull(loginRequest.getEmail()).orElseThrow(() -> {
+            Locale locale = LocaleContextHolder.getLocale();
+            String invalidTokenMessage = messageSource.getMessage("user.credentials.invalid.", null,
+                    "Credenciales inválidas", locale);
+            return new SignatureException(invalidTokenMessage);
+        });
         LoginResponse loginResponse = userMapper.toLoginResponse(userLoggedIn);
         loginResponse.setExpiresIn(jwtService.getExpirationTime());
         loginResponse.setToken(jwtService.getToken(userLoggedIn));
@@ -89,7 +87,8 @@ public class AuthService {
     public ResponseEntity<?> logout(String authHeader) {
         doLogout(authHeader);
         Locale locale = LocaleContextHolder.getLocale();
-        String successMessage = messageSource.getMessage("user.logout.success.", null, "Sesión cerrada exitosamente.", locale);
+        String successMessage = messageSource.getMessage("user.logout.success.", null, "Sesión cerrada exitosamente.",
+                locale);
         return ResponseUtil.success(successMessage);
     }
 
@@ -97,7 +96,8 @@ public class AuthService {
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             Locale locale = LocaleContextHolder.getLocale();
-            String invalidTokenMessage = messageSource.getMessage("user.token.invalid.", null, "Token Invalido.", locale);
+            String invalidTokenMessage = messageSource.getMessage("user.token.invalid.", null, "Token Invalido.",
+                    locale);
             throw new CustomException(invalidTokenMessage, HttpStatus.BAD_REQUEST.value());
         }
 

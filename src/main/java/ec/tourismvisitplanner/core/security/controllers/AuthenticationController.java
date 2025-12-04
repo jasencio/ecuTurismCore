@@ -1,6 +1,5 @@
 package ec.tourismvisitplanner.core.security.controllers;
 
-import ec.tourismvisitplanner.core.models.User;
 import ec.tourismvisitplanner.core.payload.request.LoginRequest;
 import ec.tourismvisitplanner.core.payload.request.SignupRequest;
 import ec.tourismvisitplanner.core.security.services.AuthService;
@@ -17,17 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class AuthenticationController {
 
-    private AuthService authenticationService;
+    private AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<User> register(@Valid @RequestBody SignupRequest signUpRequest) {
-        User registeredUser = authenticationService.signup(signUpRequest);
-        return ResponseEntity.ok(registeredUser);
+    public ResponseEntity<?> register(@Valid @RequestBody SignupRequest signUpRequest) {
+        return authService.signup(signUpRequest);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@Valid @RequestBody LoginRequest loginRequest) {
-        return authenticationService.login(loginRequest);
+        return authService.login(loginRequest);
     }
 
 }
