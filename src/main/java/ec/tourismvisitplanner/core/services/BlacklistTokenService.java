@@ -17,7 +17,7 @@ public class BlacklistTokenService {
         this.redisTemplate = redisTemplate;
     }
 
-    @Retryable(value = { Exception.class }, maxAttempts = 5, backoff = @Backoff(delay = 1000))
+    @Retryable(retryFor = { Exception.class }, maxAttempts = 5, backoff = @Backoff(delay = 1000))
     public void blacklistToken(String token, long expirationSeconds) {
         redisTemplate.opsForValue().set(token, "blacklisted", Duration.ofSeconds(expirationSeconds));
     }
@@ -27,7 +27,7 @@ public class BlacklistTokenService {
         log.error("Failed to blacklist token after retries due to Redis error: {}", e.getMessage());
     }
 
-    @Retryable(value = { Exception.class }, maxAttempts = 5, backoff = @Backoff(delay = 1000))
+    @Retryable(retryFor = { Exception.class }, maxAttempts = 5, backoff = @Backoff(delay = 1000))
     public boolean isTokenBlacklisted(String token) {
         return Boolean.TRUE.equals(redisTemplate.hasKey(token));
     }
